@@ -3,7 +3,7 @@ name: Conjur Integration Test
 on:
   push:
     branches:
-      - master
+      - master  # Ou main, dependendo da sua branch principal
 
 jobs:
   run-with-conjur:
@@ -17,7 +17,7 @@ jobs:
         id: conjur_secrets
         uses: cyberark/conjur-action@v2.0.0
         with:
-          url: https://192.168.112.129
+          url: https://clusterconjur.18kaio.local
           account: 18kaio
           host_id: ${{ secrets.CONJUR_HOST_ID }}
           api_key: ${{ secrets.CONJUR_API_KEY }}
@@ -26,4 +26,4 @@ jobs:
       - name: Use the secret
         run: |
           echo "O segredo foi buscado do Conjur com sucesso."
-          echo "Valor do segredo: ${{ steps.conjur_secrets.outputs.github_runner_policy_my_secret_folder }}"
+          echo "Valor do segredo: ${{ steps.conjur_secrets.outputs.my_secret_folder }}"
