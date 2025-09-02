@@ -1,9 +1,9 @@
-name: Conjur Integration Test
+name: Conjur Integration Test (Manual)
 
 on:
   push:
     branches:
-      - master  # Ou main, dependendo da sua branch principal
+      - master
 
 jobs:
   run-with-conjur:
@@ -13,17 +13,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Get credentials from Conjur
-        id: conjur_secrets
-        uses: cyberark/conjur-action@v2.0.0
-        with:
-          url: https://clusterconjur.18kaio.local
-          account: 18kaio
-          host_id: ${{ secrets.CONJUR_HOST_ID }}
-          api_key: ${{ secrets.CONJUR_API_KEY }}
-          secrets: github-runner-policy/my-secret-folder
-
-      - name: Use the secret
+      - name: Configure Conjur CLI
         run: |
+          echo "CONJUR_URL=https://192.168.112.129" >> $GITHUB_ENV
+          echo "CONJUR_ACCOUNT=18kaio" >> $GITHUB_ENV
+          echo "CONJUR_AUTHN_LOGIN=host/github-runner-policy/juice-shop-github-runner" >> $GITHUB_ENV
+          echo "CONJUR_AUTHN_API_KEY=${{ secrets.CONJUR_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Login and get secret with Conjur CLI
+        run: |
+          conjur authn login
+          SECRET=$(conjur variable get -i github-runner-policy/my-secret-folder)
           echo "O segredo foi buscado do Conjur com sucesso."
-          echo "Valor do segredo: ${{ steps.conjur_secrets.outputs.my_secret_folder }}"
+          echo "Valor do segredo: ${SECRET}"
