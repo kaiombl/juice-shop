@@ -1,0 +1,29 @@
+name: Conjur Integration Test
+
+on:
+  push:
+    branches:
+      - master  # Ou main, dependendo do nome da sua branch principal
+
+jobs:
+  run-with-conjur:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Get credentials from Conjur
+        id: conjur_secrets
+        uses: cyberark/conjur-action@v2
+        with:
+          url: https://<your-conjur-url> # Substitua pela sua URL
+          account: <your-conjur-account> # Substitua pela sua conta
+          authn_id: ${{ secrets.CONJUR_HOST_ID }}
+          api_key: ${{ secrets.CONJUR_API_KEY }}
+          secrets: my-secret-folder # O nome do seu segredo
+
+      - name: Use the secret
+        run: |
+          echo "O segredo foi buscado do Conjur com sucesso."
+          echo "Valor do segredo: ${{ steps.conjur_secrets.outputs.my_secret_folder }}"
