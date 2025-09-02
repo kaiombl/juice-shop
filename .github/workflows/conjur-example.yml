@@ -15,7 +15,7 @@ jobs:
 
       - name: Get credentials from Conjur
         id: conjur_secrets
-        uses: cyberark/conjur-action@main
+        uses: cyberark/conjur-action@v2.0.0
         with:
           url: https://<your-conjur-url> # Substitua pela sua URL
           account: <your-conjur-account> # Substitua pela sua conta
